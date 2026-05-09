@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/Solution Items/images/">
+    <File Path="../../../OneDrive/Pictures/Screenshots 1/authentication.png" />
+    <File Path="../../../OneDrive/Pictures/Screenshots 1/dashboard.png" />
+    <File Path="../../../OneDrive/Pictures/Screenshots 1/employee.png" />
+  </Folder>
+  <Project Path="EmployeeApp/EmployeeApp.csproj" />
+</Solution>

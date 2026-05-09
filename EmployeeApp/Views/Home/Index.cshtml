@@ -1,0 +1,187 @@
+﻿@using System.Security.Claims
+@{
+    ViewData["Title"] = "HRM Suite";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var fullName = User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "User";
+    var role = User.FindFirst(ClaimTypes.Role)?.Value ?? "Staff";
+    var username = User.Identity?.Name ?? "";
+    var initials = string.Concat(fullName.Split(' ').Take(2).Select(n => n.Length > 0 ? n[0].ToString().ToUpper() : ""));
+}
+
+<div id="app-shell">
+
+    <!-- ─── Sidebar ─── -->
+    <aside id="sidebar" class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon"><i class="fa-solid fa-building-user"></i></div>
+            <div class="logo-text">
+                <span class="logo-title">HRM Suite</span>
+                <span class="logo-sub">Enterprise Edition</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">MAIN</div>
+            <a href="#" class="nav-item active" data-route="dashboard">
+                <span class="nav-icon"><i class="fa-solid fa-grid-2"></i></span>
+                <span class="nav-label">Dashboard</span>
+            </a>
+            <a href="#" class="nav-item" data-route="employees">
+                <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+                <span class="nav-label">Employees</span>
+                <span class="nav-badge" id="badge-employees"></span>
+            </a>
+
+            <div class="nav-section-label">OPERATIONS</div>
+            <a href="#" class="nav-item" data-route="payroll">
+                <span class="nav-icon"><i class="fa-solid fa-money-bill-wave"></i></span>
+                <span class="nav-label">Payroll</span>
+            </a>
+            <a href="#" class="nav-item" data-route="attendance">
+                <span class="nav-icon"><i class="fa-solid fa-clock"></i></span>
+                <span class="nav-label">Attendance</span>
+            </a>
+            <a href="#" class="nav-item" data-route="leave">
+                <span class="nav-icon"><i class="fa-solid fa-calendar-check"></i></span>
+                <span class="nav-label">Leave</span>
+                <span class="nav-badge pending" id="badge-leave"></span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <!-- User card -->
+            <div class="user-card" id="user-card-toggle">
+                <div class="user-avatar" title="@fullName">@initials</div>
+                <div class="user-info">
+                    <span class="user-name">@fullName</span>
+                    <span class="user-role">@role</span>
+                </div>
+                <i class="fa-solid fa-chevron-up user-chevron" id="user-chevron"></i>
+            </div>
+
+            <!-- User dropdown (logout lives here) -->
+            <div class="user-dropdown hidden" id="user-dropdown">
+                <div class="user-dropdown-header">
+                    <span class="ud-name">@fullName</span>
+                    <span class="ud-username">@@@username</span>
+                </div>
+                <div class="ud-divider"></div>
+                <a href="#" class="ud-item">
+                    <i class="fa-solid fa-circle-user"></i> My Profile
+                </a>
+                <a href="#" class="ud-item">
+                    <i class="fa-solid fa-gear"></i> Settings
+                </a>
+                <div class="ud-divider"></div>
+                <!-- Logout form (POST to prevent CSRF) -->
+                <form method="post" action="/auth/logout" id="logout-form">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="ud-item ud-logout">
+                        <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+                    </button>
+                </form>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ─── Main Content ─── -->
+    <main id="main-content">
+
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button id="sidebar-toggle" class="icon-btn">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <nav class="breadcrumb" id="breadcrumb">
+                    <span>Dashboard</span>
+                </nav>
+            </div>
+            <div class="top-bar-right">
+                <div class="search-box">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" placeholder="Search..." id="global-search" />
+                </div>
+                <button class="icon-btn notif-btn">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="notif-dot"></span>
+                </button>
+
+                <!-- Top-bar user + logout dropdown -->
+                <div class="topbar-user" id="topbar-user-btn">
+                    <div class="topbar-avatar">@initials</div>
+                    <span class="topbar-name">@fullName</span>
+                    <i class="fa-solid fa-chevron-down" style="font-size:10px;color:var(--gray-400)"></i>
+                </div>
+
+                <div class="topbar-dropdown hidden" id="topbar-dropdown">
+                    <div class="td-header">
+                        <div class="td-avatar">@initials</div>
+                        <div>
+                            <div class="td-name">@fullName</div>
+                            <div class="td-role">@role</div>
+                        </div>
+                    </div>
+                    <div class="td-divider"></div>
+                    <form method="post" action="/auth/logout">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="td-item td-logout">
+                            <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </header>
+
+        <div id="page-outlet" class="page-outlet">
+            <div id="page-loading" class="page-loading">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Modal -->
+<div id="modal-overlay" class="modal-overlay hidden">
+    <div id="modal-container" class="modal-container">
+        <div class="modal-header">
+            <h3 id="modal-title">Modal Title</h3>
+            <button id="modal-close" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="modal-body" class="modal-body"></div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div id="toast-container" class="toast-container"></div>
+
+@section Scripts {
+    <script>
+        // ── User dropdown (sidebar) ──────────────────────────────
+        const userCardToggle = document.getElementById('user-card-toggle');
+        const userDropdown   = document.getElementById('user-dropdown');
+        const userChevron    = document.getElementById('user-chevron');
+
+        userCardToggle?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userDropdown.classList.toggle('hidden');
+            userChevron.style.transform = userDropdown.classList.contains('hidden') ? '' : 'rotate(180deg)';
+        });
+
+        // ── Top-bar dropdown ─────────────────────────────────────
+        const topbarBtn      = document.getElementById('topbar-user-btn');
+        const topbarDropdown = document.getElementById('topbar-dropdown');
+
+        topbarBtn?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            topbarDropdown.classList.toggle('hidden');
+        });
+
+        // Close both dropdowns on outside click
+        document.addEventListener('click', () => {
+            userDropdown?.classList.add('hidden');
+            topbarDropdown?.classList.add('hidden');
+            if (userChevron) userChevron.style.transform = '';
+        });
+    </script>
+}

@@ -1,0 +1,415 @@
+﻿@{
+    ViewData["Title"] = "Sign In";
+    Layout = null; // Standalone page — no sidebar/topbar
+    var error = ViewData["Error"] as string;
+    var username = ViewData["Username"] as string ?? "";
+    var returnUrl = ViewData["ReturnUrl"] as string ?? "/";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In – HRM Suite</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            background: #0f172a;
+            overflow: hidden;
+        }
+
+        /* ── Left panel ── */
+        .login-brand {
+            width: 45%;
+            background: linear-gradient(145deg, #1e3a8a 0%, #1e40af 40%, #0ea5e9 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+        .login-brand::before {
+            content: '';
+            position: absolute;
+            width: 500px; height: 500px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 50%;
+            top: -150px; right: -150px;
+        }
+        .login-brand::after {
+            content: '';
+            position: absolute;
+            width: 300px; height: 300px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 50%;
+            bottom: -80px; left: -80px;
+        }
+        .brand-logo {
+            width: 56px; height: 56px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px;
+            margin-bottom: 32px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .brand-title {
+            font-size: 38px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -1px;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+        .brand-sub {
+            font-size: 16px;
+            color: rgba(255,255,255,0.65);
+            font-weight: 400;
+            line-height: 1.6;
+            max-width: 320px;
+            margin-bottom: 48px;
+        }
+        .brand-features {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .brand-feature {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .brand-feature-icon {
+            width: 36px; height: 36px;
+            background: rgba(255,255,255,0.12);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        /* ── Right panel ── */
+        .login-panel {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8fafc;
+            padding: 40px;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+        }
+        .login-heading {
+            margin-bottom: 32px;
+        }
+        .login-heading h1 {
+            font-size: 26px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+        .login-heading p {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        /* ── Form ── */
+        .form-group { margin-bottom: 18px; }
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 7px;
+        }
+        .form-input-wrap { position: relative; }
+        .form-input-icon {
+            position: absolute;
+            left: 13px; top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 14px;
+            pointer-events: none;
+        }
+        .form-control {
+            width: 100%;
+            padding: 11px 14px 11px 40px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            color: #1e293b;
+            background: #fff;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .form-control:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+        }
+        .pwd-toggle {
+            position: absolute;
+            right: 13px; top: 50%;
+            transform: translateY(-50%);
+            background: none; border: none; cursor: pointer;
+            color: #94a3b8; font-size: 14px;
+            padding: 2px 4px;
+        }
+        .pwd-toggle:hover { color: #475569; }
+
+        .form-row-inline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+        }
+        .checkbox-label {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; color: #64748b; cursor: pointer;
+        }
+        .checkbox-label input[type="checkbox"] {
+            width: 15px; height: 15px;
+            accent-color: #2563eb; cursor: pointer;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-login:hover { background: #1d4ed8; }
+        .btn-login:active { transform: scale(0.99); }
+
+        /* ── Error alert ── */
+        .alert-error {
+            background: #fef2f2;
+            border: 1.5px solid #fecaca;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex; align-items: center; gap: 10px;
+            color: #991b1b;
+            font-size: 13.5px;
+            font-weight: 500;
+        }
+        .alert-error i { color: #ef4444; font-size: 15px; flex-shrink: 0; }
+
+        /* ── Divider ── */
+        .divider {
+            display: flex; align-items: center; gap: 12px;
+            margin: 24px 0;
+            color: #cbd5e1; font-size: 12px;
+        }
+        .divider::before, .divider::after {
+            content: ''; flex: 1;
+            height: 1px; background: #e2e8f0;
+        }
+
+        /* ── Demo credentials ── */
+        .demo-creds {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-top: 24px;
+        }
+        .demo-creds-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #0369a1;
+            margin-bottom: 10px;
+        }
+        .demo-row {
+            display: flex; justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px dashed #bae6fd;
+            cursor: pointer;
+        }
+        .demo-row:last-child { border-bottom: none; }
+        .demo-row:hover { background: rgba(14,165,233,0.05); border-radius: 4px; }
+        .demo-role {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: #0ea5e9;
+            color: #fff;
+        }
+        .demo-role.hr { background: #8b5cf6; }
+        .demo-role.staff { background: #64748b; }
+        .demo-creds-pair {
+            font-size: 12px;
+            color: #475569;
+            font-family: 'Courier New', monospace;
+        }
+
+        @@media (max-width: 768px) {
+            .login-brand { display: none; }
+            .login-panel { background: #0f172a; }
+            .login-card {
+                background: #1e293b;
+                padding: 32px;
+                border-radius: 20px;
+                box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            }
+            .login-heading h1 { color: #f8fafc; }
+            .login-heading p  { color: #94a3b8; }
+            .form-label { color: #cbd5e1; }
+            .form-control { background: #0f172a; border-color: #334155; color: #f1f5f9; }
+            .form-control:focus { border-color: #3b82f6; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Left brand panel -->
+    <div class="login-brand">
+        <div class="brand-logo">🏢</div>
+        <div class="brand-title">HRM Suite</div>
+        <div class="brand-sub">Enterprise Human Resource Management — manage employees, payroll, attendance and leave in one place.</div>
+        <div class="brand-features">
+            <div class="brand-feature">
+                <div class="brand-feature-icon"><i class="fa-solid fa-users"></i></div>
+                <span>Employee Management & Profiles</span>
+            </div>
+            <div class="brand-feature">
+                <div class="brand-feature-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
+                <span>Payroll Processing & Reports</span>
+            </div>
+            <div class="brand-feature">
+                <div class="brand-feature-icon"><i class="fa-solid fa-clock"></i></div>
+                <span>Attendance Tracking</span>
+            </div>
+            <div class="brand-feature">
+                <div class="brand-feature-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                <span>Leave Request Workflow</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right login panel -->
+    <div class="login-panel">
+        <div class="login-card">
+            <div class="login-heading">
+                <h1>Welcome back 👋</h1>
+                <p>Sign in to your HRM Suite account</p>
+            </div>
+
+            @if (!string.IsNullOrEmpty(error))
+            {
+                <div class="alert-error">
+                    <i class="fa-solid fa-circle-xmark"></i>
+                    <span>@error</span>
+                </div>
+            }
+
+            <form method="post" action="/auth/login">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="returnUrl" value="@returnUrl" />
+
+                <div class="form-group">
+                    <label class="form-label" for="username">Username</label>
+                    <div class="form-input-wrap">
+                        <i class="fa-solid fa-user form-input-icon"></i>
+                        <input type="text" id="username" name="username" class="form-control"
+                               value="@username" placeholder="Enter your username"
+                               autocomplete="username" autofocus />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <div class="form-input-wrap">
+                        <i class="fa-solid fa-lock form-input-icon"></i>
+                        <input type="password" id="password" name="password" class="form-control"
+                               placeholder="Enter your password"
+                               autocomplete="current-password" />
+                        <button type="button" class="pwd-toggle" id="pwd-toggle" title="Show/hide password">
+                            <i class="fa-solid fa-eye" id="pwd-icon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-row-inline">
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="rememberMe" value="true" />
+                        Remember me for 30 days
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    Sign In
+                </button>
+            </form>
+
+            <!-- Demo credentials box -->
+            <div class="demo-creds">
+                <div class="demo-creds-title">🔑 Demo Credentials — click to fill</div>
+                <div class="demo-row" onclick="fillCreds('admin','Admin@123')">
+                    <span class="demo-role">Admin</span>
+                    <span class="demo-creds-pair">admin / Admin@123</span>
+                </div>
+                <div class="demo-row" onclick="fillCreds('hrmanager','Hr@123')">
+                    <span class="demo-role hr">HR</span>
+                    <span class="demo-creds-pair">hrmanager / Hr@123</span>
+                </div>
+                <div class="demo-row" onclick="fillCreds('staff','Staff@123')">
+                    <span class="demo-role staff">Staff</span>
+                    <span class="demo-creds-pair">staff / Staff@123</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Password visibility toggle
+        document.getElementById('pwd-toggle').addEventListener('click', function () {
+            const input = document.getElementById('password');
+            const icon  = document.getElementById('pwd-icon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fa-solid fa-eye';
+            }
+        });
+
+        // Fill demo credentials on click
+        function fillCreds(user, pass) {
+            document.getElementById('username').value = user;
+            document.getElementById('password').value = pass;
+            document.getElementById('password').focus();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>@ViewData["Title"] - HRM Suite</title>
+
+    <!-- ═══════════════════════════════════════════════════
+         DevExtreme v25.1.4 — Styles
+         Option A: CDN (used here — no local file needed)
+         Option B: Local → ~/css/dx.common.css + theme file
+    ════════════════════════════════════════════════════ -->
+    <link rel="stylesheet"
+          href="https://cdn3.devexpress.com/jslib/25.1.4/css/dx.common.css" />
+    <link rel="stylesheet"
+          href="https://cdn3.devexpress.com/jslib/25.1.4/css/dx.material.blue.light.css" />
+
+    <!-- ═══════════════════════════════════════════════════
+         Google Fonts
+    ════════════════════════════════════════════════════ -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+          rel="stylesheet" />
+
+    <!-- ═══════════════════════════════════════════════════
+         Font Awesome 6
+    ════════════════════════════════════════════════════ -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- ═══════════════════════════════════════════════════
+         Application Stylesheet
+    ════════════════════════════════════════════════════ -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <link rel="icon" type="image/svg+xml"
+          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏢</text></svg>" />
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+
+    @RenderBody()
+
+    <!-- ═══════════════════════════════════════════════════
+         jQuery — required by DevExtreme
+         Must load BEFORE dx.all.js
+    ════════════════════════════════════════════════════ -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <!-- ═══════════════════════════════════════════════════
+         DevExtreme v25.1.4 — JavaScript
+         Option A: CDN (used here)
+         Option B: Local → copy dx.all.js to ~/js/
+         Option C: npm  → npm install devextreme@25.1.4
+    ════════════════════════════════════════════════════ -->
+    <script src="https://cdn3.devexpress.com/jslib/25.1.4/js/dx.all.js"></script>
+
+    <!-- ═══════════════════════════════════════════════════
+         DevExtreme License Key (v23.1+ requires registration)
+         Get yours from: https://js.devexpress.com/licensing/
+    ════════════════════════════════════════════════════ -->
+    <script>
+        DevExpress.config({
+            // licenseKey: 'YOUR_DEVEXTREME_LICENSE_KEY'
+        });
+    </script>
+
+    <!-- ═══════════════════════════════════════════════════
+         DevExtreme Global Defaults
+    ════════════════════════════════════════════════════ -->
+    <script>
+        // Apply consistent defaults to all DataGrid instances
+        DevExpress.ui.dxDataGrid.defaultOptions({
+            options: {
+                showBorders: false,
+                rowAlternationEnabled: true,
+                hoverStateEnabled: true,
+                columnAutoWidth: true,
+                loadPanel: { enabled: true, text: 'Loading...' },
+                noDataText: 'No records found',
+                pager: {
+                    showPageSizeSelector: true,
+                    allowedPageSizes: [10, 15, 25, 50],
+                    showInfo: true,
+                    showNavigationButtons: true
+                },
+                sorting: { mode: 'multiple' }
+            }
+        });
+
+        // Consistent form defaults
+        DevExpress.ui.dxForm.defaultOptions({
+            options: {
+                labelLocation: 'top',
+                showColonAfterLabel: false
+            }
+        });
+
+        // Apply Material Blue theme to all charts
+        DevExpress.viz.currentTheme('material.blue.light');
+    </script>
+
+    <!-- ═══════════════════════════════════════════════════
+         Application Scripts
+    ════════════════════════════════════════════════════ -->
+    <script src="~/js/router.js" asp-append-version="true"></script>
+    <script src="~/js/app.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
